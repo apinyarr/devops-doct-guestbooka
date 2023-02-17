@@ -40,11 +40,11 @@ docker stop <option> <container>
 ```
 docker rename <old_name> <new_name>
 ```
-4. Start the container using the command.
-```
-docker start <option> <container>
-```
-5. Rename the new container to standard name using the command.
+4. Rename the new container to standard name using the command.
 ```
 docker rename <old_name> <new_name>
+```
+5. Start the container using the command.
+```
+docker start <option> <container>
 ```
