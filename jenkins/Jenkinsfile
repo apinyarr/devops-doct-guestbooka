@@ -15,5 +15,15 @@ pipeline {
                 echo "hello world!"
             }
         }
+
+        stage('Preparation') {
+            steps {
+                echo "********************* Stage: Preparation *********************"
+                echo "--------------------- Stpe: Reading Environment ---------------------"
+                echo "Environment: ${params.Environment}"
+                echo "--------------------- Stpe: Reading Branch ---------------------"
+                echo "Branch/Tag: ${params.Branch}"
+            }
+        }
     }
 }
