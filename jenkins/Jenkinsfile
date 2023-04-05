@@ -1,3 +1,6 @@
+def Environment = "SIT"
+def Branch = "develop"
+
 pipeline {
     agent {
         label "master"
@@ -20,9 +23,14 @@ pipeline {
             steps {
                 echo "********************* Stage: Preparation *********************"
                 echo "--------------------- Stpe: Reading Environment ---------------------"
-                echo "Environment: ${params.Environment}"
+                Environment = params.Environment
+                echo "Environment: ${Environment}"
                 echo "--------------------- Stpe: Reading Branch ---------------------"
-                echo "Branch/Tag: ${params.Branch}"
+                if(params.Branch != '') {
+                    Branch = params.Branch
+                   
+                }
+                echo "Branch/Tag: ${Branch}"
             }
         }
     }
