@@ -21,16 +21,17 @@ pipeline {
 
         stage('Preparation') {
             steps {
-                echo "********************* Stage: Preparation *********************"
-                echo "--------------------- Stpe: Reading Environment ---------------------"
-                Environment = params.Environment
-                echo "Environment: ${Environment}"
-                echo "--------------------- Stpe: Reading Branch ---------------------"
-                if(params.Branch != '') {
-                    Branch = params.Branch
-                   
+                script{
+                    echo "********************* Stage: Preparation *********************"
+                    echo "--------------------- Stpe: Reading Environment ---------------------"
+                    Environment = params.Environment
+                    echo "Environment: ${Environment}"
+                    echo "--------------------- Stpe: Reading Branch ---------------------"
+                    if(params.Branch != '') {
+                        Branch = params.Branch
+                    }
+                    echo "Branch/Tag: ${Branch}"
                 }
-                echo "Branch/Tag: ${Branch}"
             }
         }
     }
