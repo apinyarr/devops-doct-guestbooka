@@ -1,0 +1,19 @@
+pipeline {
+    agent {
+        lable "master"
+    }
+
+    options {
+        // skipDefaultCheckout()
+        timeout(time: 5, unit: 'MINUTES')
+        timestamps()
+    }
+
+    stages {
+        stage('test') {
+            steps {
+                echo "hello world!"
+            }
+        }
+    }
+}
