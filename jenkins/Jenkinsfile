@@ -48,10 +48,17 @@ pipeline {
                     echo "--------------------- Step: Pull Guestbook Base Image ---------------------"
                     sh "docker pull apinyarr/guestbooka:base"
                     echo "--------------------- Step: Update Code From ${params.Branch} ---------------------"
-                    sh "ls -alrth"
+                    sh "git checkout ${params.Branch}"
+                    sh "docker create --name guestbooka -e MONGODB_ADDON_URI=mongodb://172.17.0.1:27017/admin -p 8080:8080 apinyarr/guestbooka:base"
+                    sh "docker cp app/. guestbooka:/"
                     echo "--------------------- Step: Remove Backup Container ---------------------"
                     sh "docker rm -f guestbooka-backup"
-
+                    echo "==NOTE=="
+                    echo "If docker rm shown an error, it is ok because there is no a backup container."
+                    echo "--------------------- Step: Run Guestbooka Container With Code From ${params.Branch} ---------------------"
+                    sh "docker stop guestbooka"
+                    sh "docker rename guestbooka guestbooka-backup"
+                    sh "docker start guestbooka"
                 }
             }
         }
