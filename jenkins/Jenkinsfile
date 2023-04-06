@@ -23,10 +23,10 @@ pipeline {
             steps {
                 script {
                     echo "********************* Stage: Preparation *********************"
-                    echo "--------------------- Stpe: Reading Environment ---------------------"
+                    echo "--------------------- Step: Reading Environment ---------------------"
                     Environment = params.Environment
                     echo "Environment: ${Environment}"
-                    echo "--------------------- Stpe: Reading Branch ---------------------"
+                    echo "--------------------- Step: Reading Branch ---------------------"
                     if(params.Branch != '') {
                         Branch = params.Branch
                     }
@@ -45,7 +45,13 @@ pipeline {
             steps {
                 script {
                     echo "********************* Stage: SIT Deployment *********************"
-                    sh "docker ps -a"
+                    echo "--------------------- Step: Pull Guestbook Base Image ---------------------"
+                    sh "docker pull apinyarr/guestbooka:base"
+                    echo "--------------------- Step: Update Code From ${params.Branch} ---------------------"
+                    sh "pwd"
+                    echo "--------------------- Step: Remove Backup Container ---------------------"
+                    sh "docker rm -f guestbooka-backup"
+
                 }
             }
         }
