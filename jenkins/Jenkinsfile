@@ -38,7 +38,7 @@ pipeline {
         stage('SIT Deployment') {
             steps {
                 when {
-                    expression { return Environment == "SIT" }
+                    expression { return params.Environment == "SIT" }
                 }
                 script {
                     echo "********************* Stage: SIT Deployment *********************"
