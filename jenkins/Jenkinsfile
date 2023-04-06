@@ -21,7 +21,7 @@ pipeline {
 
         stage('Preparation') {
             steps {
-                script{
+                script {
                     echo "********************* Stage: Preparation *********************"
                     echo "--------------------- Stpe: Reading Environment ---------------------"
                     Environment = params.Environment
@@ -31,6 +31,18 @@ pipeline {
                         Branch = params.Branch
                     }
                     echo "Branch/Tag: ${Branch}"
+                }
+            }
+        }
+
+        stage('SIT Deployment') {
+            steps {
+                when {
+                    Environment == "SIT"
+                }
+                script {
+                    echo "********************* Stage: SIT Deployment *********************"
+
                 }
             }
         }
