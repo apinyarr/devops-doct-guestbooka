@@ -48,7 +48,7 @@ pipeline {
                     echo "--------------------- Step: Pull Guestbook Base Image ---------------------"
                     sh "docker pull apinyarr/guestbooka:base"
                     echo "--------------------- Step: Update Code From ${params.Branch} ---------------------"
-                    sh "pwd"
+                    sh "pwd & ls -alrth"
                     echo "--------------------- Step: Remove Backup Container ---------------------"
                     sh "docker rm -f guestbooka-backup"
 
