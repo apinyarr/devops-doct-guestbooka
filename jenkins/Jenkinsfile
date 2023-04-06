@@ -45,23 +45,25 @@ pipeline {
             steps {
                 script {
                     echo "********************* Stage: SIT Deployment *********************"
-                    echo "--------------------- Step: Pull Guestbook Base Image ---------------------"
-                    sh "docker pull apinyarr/guestbooka:base"
-                    echo "--------------------- Step: Update Code From ${params.Branch} ---------------------"
-                    sh "git checkout origin/${params.Branch}"
-                    sh "docker create --name guestbooka -e MONGODB_ADDON_URI=mongodb://172.17.0.1:27017/admin -p 8080:8080 apinyarr/guestbooka:base"
-                    sh "docker cp app/. guestbooka:/"
                     echo "--------------------- Step: Remove Backup Container ---------------------"
                     sh "docker rm -f guestbooka-backup"
                     echo "==NOTE=="
                     echo "If docker rm shown an error, it is ok because there is no a backup container."
-                    echo "--------------------- Step: Run Guestbooka Container With Code From ${params.Branch} ---------------------"
+
+                    echo "--------------------- Step: Pull Guestbook Base Image ---------------------"
+                    sh "docker pull apinyarr/guestbooka:base"
+
+                    echo "--------------------- Step: Update Code From ${params.Branch} ---------------------"
+                    sh "git checkout origin/${params.Branch}"
                     try {
                         sh "docker stop guestbooka"
                         sh "docker rename guestbooka guestbooka-backup"
                     } catch (Exception e) {
                         echo "Exception occurred: " + e.toString()
                     }
+                    sh "docker create --name guestbooka -e MONGODB_ADDON_URI=mongodb://172.17.0.1:27017/admin -p 8080:8080 apinyarr/guestbooka:base"
+                    sh "docker cp app/. guestbooka:/"
+                    echo "--------------------- Step: Run Guestbooka Container With Code From ${params.Branch} ---------------------"
                     sh "docker start guestbooka"
                 }
             }
