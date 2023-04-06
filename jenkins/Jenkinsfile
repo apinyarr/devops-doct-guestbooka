@@ -39,6 +39,9 @@ pipeline {
             when {
                 expression { return params.Environment == "SIT" }
             }
+            agent {
+                label "sit-app"
+            }
             steps {
                 script {
                     echo "********************* Stage: SIT Deployment *********************"
