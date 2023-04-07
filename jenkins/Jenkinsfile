@@ -65,6 +65,7 @@ pipeline {
                     sh "docker cp app/. guestbooka:/"
                     echo "--------------------- Step: Run Guestbooka Container With Code From ${params.Branch} ---------------------"
                     sh "docker start guestbooka"
+                    currentBuild.description = "Branch: ${params.Branch}"
                 }
             }
         }
