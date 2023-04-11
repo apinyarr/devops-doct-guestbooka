@@ -39,9 +39,11 @@ pipeline {
             when {
                 expression { return params.Environment == "SIT" }
             }
+
             agent {
                 label "sit-app"
             }
+
             steps {
                 script {
                     echo "********************* Stage: SIT Deployment *********************"
@@ -74,9 +76,15 @@ pipeline {
             when {
                 expression { return params.Environment == "SIT" }
             }
+
             agent {
                 label "sit-app"
             }
+
+            options {
+                skipDefaultCheckout()
+            }
+
             steps {
                 script {
                     echo "********************* Stage: Clean Up *********************"
