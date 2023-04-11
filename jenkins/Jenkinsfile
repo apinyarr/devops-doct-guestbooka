@@ -80,9 +80,8 @@ pipeline {
             steps {
                 script {
                     echo "********************* Stage: Clean Up *********************"
-                    echo "--------------------- Step: Clean Up Work Space and delete @tmp folder ---------------------"
+                    echo "--------------------- Step: Clean Up Work Space ---------------------"
                     cleanWs()
-                    sh "[ -d \"${WORKSPACE}@tmp\" ] && rm -rf ${WORKSPACE}@tmp || echo 'no tmp path to delete'"
                 }
             }
         }
