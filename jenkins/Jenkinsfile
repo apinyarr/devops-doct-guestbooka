@@ -13,12 +13,6 @@ pipeline {
     }
 
     stages {
-        stage('test') {
-            steps {
-                echo "hello world!"
-            }
-        }
-
         stage('Preparation') {
             steps {
                 script {
