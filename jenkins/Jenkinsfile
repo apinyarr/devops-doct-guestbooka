@@ -6,6 +6,11 @@ pipeline {
         label "master"
     }
 
+    parameters {
+        choice(name: 'Environment', choices: ['SIT'], description: 'Select Environment.')
+        string(name: 'Branch', description 'Branch name. Default branch is develop.')
+    }
+
     options {
         // skipDefaultCheckout()
         timeout(time: 5, unit: 'MINUTES')
