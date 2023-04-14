@@ -8,7 +8,7 @@ pipeline {
 
     parameters {
         choice(name: 'Environment', choices: ['SIT'], description: 'Select Environment.')
-        string(name: 'Branch', description 'Branch name. Default branch is develop.')
+        string(name: 'Branch', description: 'Branch name. Default branch is develop.')
     }
 
     options {
