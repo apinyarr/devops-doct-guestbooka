@@ -74,10 +74,6 @@ pipeline {
         }
 
         stage('Clean Up') {
-            when {
-                expression { return params.Environment == "SIT" }
-            }
-
             agent {
                 label "sit-app"
             }
