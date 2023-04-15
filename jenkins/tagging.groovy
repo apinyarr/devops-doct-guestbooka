@@ -37,8 +37,8 @@ pipeline {
                     echo "--------------------- Step: Checking out from ${params.Branch} ---------------------"
                     sh "git checkout origin/${params.Branch}"
                     echo "--------------------- Step: Tagging name ${params.Tag} ---------------------"
-                    sh "git tag v${params.Tag}.${BUILD}"
-                    sh "git push origin v${params.Tag}.${BUILD}"
+                    sh "git tag v${params.Tag}.${BUILD_NUMBER}"
+                    sh "git push origin v${params.Tag}.${BUILD_NUMBER}"
                 }
             }
         }
