@@ -7,7 +7,7 @@ pipeline {
 
     parameters {
         string(name: 'Branch', description: 'Branch name. Default branch is develop.')
-        string(name: 'Tag', description: 'Give tag name, e.g. v1.0')
+        string(name: 'Tag', description: 'Give tag name, e.g. 1.0')
     }
 
     options {
@@ -44,6 +44,10 @@ pipeline {
         }
 
         stage("Docker Tag") {
+            agent {
+                label "sit-app"
+            }
+
             environment {
                 DOCKERHUB_CRED = credentials('dockerhubcred')
             }
