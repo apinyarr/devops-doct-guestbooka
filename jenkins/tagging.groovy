@@ -1,0 +1,67 @@
+def Branch = "develop"
+
+pipeline {
+    agent {
+        label "master"
+    }
+
+    parameters {
+        string(name: 'Branch', description: 'Branch name. Default branch is develop.')
+        string(name: 'Tag', description: 'Give tag name, e.g. v1.0')
+    }
+
+    options {
+        // skipDefaultCheckout()
+        timeout(time: 5, unit: 'MINUTES')
+        timestamps()
+    }
+
+    stages {
+        stage('Preparation') {
+            steps {
+                script {
+                    echo "********************* Stage: Preparation *********************"
+                    echo "--------------------- Step: Reading Branch ---------------------"
+                    if(params.Branch != '') {
+                        Branch = params.Branch
+                    }
+                    echo "Branch/Tag: ${Branch}"
+                }
+            }
+        }
+
+        stage("Git Tagging") {
+            steps {
+                script {
+                    echo "********************* Stage: Git Tagging *********************"
+                    echo "--------------------- Step: Checking out from ${params.Branch} ---------------------"
+                    sh "git checkout origin/${params.Branch}"
+                    echo "--------------------- Step: Tagging name ${params.Tag} ---------------------"
+                    sh "git tag v${params.Tag}.${BUILD}"
+                    sh "git push origin v${params.Tag}.${BUILD}"
+                }
+            }
+        }
+
+        stage("Docker Tag") {
+            environment {
+                DOCKERHUB_CRED = credentials('dockerhubcred')
+            }
+
+            steps {
+                script {
+                    echo "********************* Stage: Docker Tag *********************"
+                    echo "--------------------- Step: Build an image from ${params.Branch} ---------------------"
+                    dir('./app') {
+                        sh "docker build -t apinyarr/guestbooka:v${params.Tag}.${BUILD} ."
+                        sh "docker images"
+                    }
+                    echo "--------------------- Step: Login to Docker Hub  ---------------------"
+                    sh "docker login --username $DOCKERHUB_CRED"
+                    echo "--------------------- Step: Push build image to Docker Hub  ---------------------"
+                    sh "docker push apinyarr/guestbooka:v${params.Tag}.${BUILD}"
+                }
+            }
+        }
+    }
+}
