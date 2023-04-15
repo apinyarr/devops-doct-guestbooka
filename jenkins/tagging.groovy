@@ -36,7 +36,7 @@ pipeline {
                     echo "********************* Stage: Git Tagging *********************"
                     echo "--------------------- Step: Checking out from ${params.Branch} ---------------------"
                     sh "git checkout origin/${params.Branch}"
-                    echo "--------------------- Step: Tagging name ${params.Tag} ---------------------"
+                    echo "--------------------- Step: Tagging name ${params.Tag}.${BUILD_NUMBER} ---------------------"
                     sh "git tag v${params.Tag}.${BUILD_NUMBER}"
                     sh "git push origin v${params.Tag}.${BUILD_NUMBER}"
                 }
@@ -57,13 +57,13 @@ pipeline {
                     echo "********************* Stage: Docker Tag *********************"
                     echo "--------------------- Step: Build an image from ${params.Branch} ---------------------"
                     dir('./app') {
-                        sh "docker build -t apinyarr/guestbooka:v${params.Tag}.${BUILD} ."
+                        sh "docker build -t apinyarr/guestbooka:v${params.Tag}.${BUILD_NUMBER} ."
                         sh "docker images"
                     }
                     echo "--------------------- Step: Login to Docker Hub  ---------------------"
                     sh "docker login --username $DOCKERHUB_CRED"
                     echo "--------------------- Step: Push build image to Docker Hub  ---------------------"
-                    sh "docker push apinyarr/guestbooka:v${params.Tag}.${BUILD}"
+                    sh "docker push apinyarr/guestbooka:v${params.Tag}.${BUILD_NUMBER}"
                 }
             }
         }
