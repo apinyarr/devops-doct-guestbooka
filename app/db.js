@@ -29,7 +29,7 @@ module.exports = {
                 var val = result[i];
                 values[val["_id"]] = val["value"]
             }
-            var title = process.env.TITLE || 'NodeJS MongoDB demo'
+            var title = process.env.TITLE || 'Guestbook A'
             res.render('index', {title, values: values});
         });
     },

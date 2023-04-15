@@ -1,0 +1,96 @@
+def Environment = "SIT"
+def Branch = "develop"
+
+pipeline {
+    agent {
+        label "master"
+    }
+
+    parameters {
+        choice(name: 'Environment', choices: ['SIT'], description: 'Select Environment.')
+        string(name: 'Branch', description: 'Branch name. Default branch is develop.')
+    }
+
+    options {
+        // skipDefaultCheckout()
+        timeout(time: 5, unit: 'MINUTES')
+        timestamps()
+    }
+
+    stages {
+        stage('Preparation') {
+            steps {
+                script {
+                    echo "********************* Stage: Preparation *********************"
+                    echo "--------------------- Step: Reading Environment ---------------------"
+                    Environment = params.Environment
+                    echo "Environment: ${Environment}"
+                    echo "--------------------- Step: Reading Branch ---------------------"
+                    if(params.Branch != '') {
+                        Branch = params.Branch
+                    }
+                    echo "Branch/Tag: ${Branch}"
+                }
+            }
+        }
+
+        stage('SIT Deployment') {
+            when {
+                expression { return params.Environment == "SIT" }
+            }
+
+            agent {
+                label "sit-app"
+            }
+
+            steps {
+                script {
+                    echo "********************* Stage: SIT Deployment *********************"
+                    echo "--------------------- Step: Remove Backup Container ---------------------"
+                    sh "docker rm -f guestbooka-backup"
+                    echo "==NOTE=="
+                    echo "If docker rm shown an error, it is ok because there is no a backup container."
+
+                    echo "--------------------- Step: Pull Guestbook Base Image ---------------------"
+                    sh "docker pull apinyarr/guestbooka:base"
+
+                    echo "--------------------- Step: Update Code From ${params.Branch} ---------------------"
+                    sh "git checkout origin/${params.Branch}"
+                    try {
+                        sh "docker stop guestbooka"
+                        sh "docker rename guestbooka guestbooka-backup"
+                    } catch (Exception e) {
+                        echo "Exception occurred: " + e.toString()
+                    }
+                    sh "docker create --name guestbooka -e MONGODB_ADDON_URI=mongodb://172.17.0.1:27017/admin -p 8080:8080 apinyarr/guestbooka:base"
+                    sh "docker cp app/. guestbooka:/"
+                    echo "--------------------- Step: Run Guestbooka Container With Code From ${params.Branch} ---------------------"
+                    sh "docker start guestbooka"
+                    currentBuild.description = "Branch: ${params.Branch}"
+                }
+            }
+        }
+
+        stage('Clean Up') {
+            when {
+                expression { return params.Environment == "SIT" }
+            }
+
+            agent {
+                label "sit-app"
+            }
+
+            options {
+                skipDefaultCheckout()
+            }
+
+            steps {
+                script {
+                    echo "********************* Stage: Clean Up *********************"
+                    echo "--------------------- Step: Clean Up Work Space ---------------------"
+                    cleanWs()
+                }
+            }
+        }
+    }
+}
