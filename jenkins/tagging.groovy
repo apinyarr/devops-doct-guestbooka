@@ -68,6 +68,29 @@ pipeline {
                     // ssh "docker login --username $DOCKERHUB_CRED"
                     echo "--------------------- Step: Push build image to Docker Hub  ---------------------"
                     sh "docker push apinyarr/guestbooka:v${params.Tag}.${BUILD_NUMBER}"
+                    currentBuild.description = "Tagging: v${params.Tag}.${BUILD_NUMBER}"
+                }
+            }
+        }
+
+        stage('Clean Up') {
+            when {
+                expression { return params.Environment == "SIT" }
+            }
+
+            agent {
+                label "sit-app"
+            }
+
+            options {
+                skipDefaultCheckout()
+            }
+
+            steps {
+                script {
+                    echo "********************* Stage: Clean Up *********************"
+                    echo "--------------------- Step: Clean Up Work Space ---------------------"
+                    cleanWs()
                 }
             }
         }
