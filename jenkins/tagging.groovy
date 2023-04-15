@@ -31,6 +31,10 @@ pipeline {
         }
 
         stage("Git Tagging") {
+            agent {
+                label "sit-app"
+            }
+
             steps {
                 script {
                     echo "********************* Stage: Git Tagging *********************"
