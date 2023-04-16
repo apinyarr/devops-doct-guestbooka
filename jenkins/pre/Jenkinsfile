@@ -1,6 +1,7 @@
 def Branch = "develop"
 def node = ["PRE":"pre-app", "PRD":"prd-app1", "PRD1":"prd-app1", "PRD2":"prd-app2"]
 def MONGODB_IP = "192.168.10.12"
+def selenium_url = "https://y57fsw1ar6.execute-api.us-east-1.amazonaws.com/startwebdriver?release="
 
 pipeline {
     agent {
@@ -75,6 +76,26 @@ pipeline {
                     }
                     sh "docker run -d --name guestbooka -e MONGODB_ADDON_URI=mongodb://${MONGODB_IP}:27017/admin -p 8080:8080 apinyarr/guestbooka:${params.Branch}"
                     currentBuild.description = "Branch: ${params.Branch}"
+                }
+            }
+        }
+
+        stage('Selenium Web Driver') {
+            when {
+                expression { return params.Environment == "PRE" }
+            }
+
+            options {
+                skipDefaultCheckout()
+            }
+
+            steps {
+                script {
+                    echo "********************* Stage: Selenium Web Driver *********************"
+                    echo "--------------------- Step: Triggering Selenium Lambda function  ---------------------"
+                    sh "curl -v ${selenium_url}${params.Branch}"
+                    echo "--------------------- Step: Selenium result screenshot  ---------------------"
+                    echo "https://andyawson-ui-test.s3.amazonaws.com/screenshots/home_${params.Branch}.png"
                 }
             }
         }
