@@ -1,6 +1,6 @@
-def Environment = "SIT"
 def Branch = "develop"
-def node = ["PRE":"pre-app", "PRD":"prd-app"]
+def node = ["PRE":"pre-app", "PRD":"prd-app1", "PRD1":"prd-app1", "PRD2":"prd-app2"]
+def MONGODB_IP = "192.168.10.12"
 
 pipeline {
     agent {
@@ -8,7 +8,7 @@ pipeline {
     }
 
     parameters {
-        choice(name: 'Environment', choices: ['PRE','PRD'], description: 'Select Environment.')
+        choice(name: 'Environment', choices: ['PRE','PRD','PRD1','PRD2'], description: 'Select Environment.')
         string(name: 'Branch', description: 'Branch name or Tag. Default branch is develop.')
     }
 
@@ -24,13 +24,16 @@ pipeline {
                 script {
                     echo "********************* Stage: Preparation *********************"
                     echo "--------------------- Step: Reading Environment ---------------------"
-                    Environment = params.Environment
-                    echo "Environment: ${Environment}"
+                    echo "Environment: ${params.Environment}"
                     echo "--------------------- Step: Reading Branch ---------------------"
-                    if(params.Branch != '') {
-                        Branch = params.Branch
+                    if(params.Branch == '') {
+                        echo "No specific branch provided!!!"
+                        exit 1
                     }
-                    echo "Branch/Tag: ${Branch}"
+                    echo "Branch/Tag: ${params.Branch}"
+                    if (params.Environment != "PRE") {
+                        MONGODB_IP = "192.168.30.11"
+                    }
                 }
             }
         }
@@ -40,24 +43,21 @@ pipeline {
                 anyOf {
                     expression { return params.Environment == "PRE" }
                     expression { return params.Environment == "PRD" }
+                    expression { return params.Environment == "PRD2" }
                 }
             }
 
             agent {
-                label node["${Environment}"]
+                label node["${params.Environment}"]
             }
 
             options {
                 skipDefaultCheckout()
             }
 
-            environment {
-                MONGODB_IP = "192.168.10.12"
-            }
-
             steps {
                 script {
-                    echo "********************* Stage: ${Environment} Deployment *********************"
+                    echo "********************* Stage: ${params.Environment} Deployment *********************"
                     echo "--------------------- Step: Remove Backup Container ---------------------"
                     sh "docker rm -f guestbooka-backup"
                     echo "==NOTE=="
@@ -79,16 +79,17 @@ pipeline {
             }
         }
 
-        stage('Clean Up PRE') {
+        stage('Clean Up') {
             when {
                 anyOf {
                     expression { return params.Environment == "PRE" }
                     expression { return params.Environment == "PRD" }
+                    expression { return params.Environment == "PRD2" }
                 }
             }
 
             agent {
-                label node["${Environment}"]
+                label node["${params.Environment}"]
             }
 
             options {
@@ -100,6 +101,36 @@ pipeline {
                     echo "********************* Stage: Clean Up *********************"
                     echo "--------------------- Step: Clean Up Work Space ---------------------"
                     cleanWs()
+                }
+            }
+        }
+
+        stage('Post Deployment') {
+            when {
+                anyOf {
+                    expression { return params.Environment == "PRD" }
+                    expression { return params.Environment == "PRD2" }
+                }
+            }
+
+            agent {
+                label node["${params.Environment}"]
+            }
+
+            options {
+                skipDefaultCheckout()
+            }
+            steps {
+                script {
+                    echo "********************* Stage: Post Deployment *********************"
+                    echo "--------------------- Step: continue deploying the next server (if any)  ---------------------"
+                    if(params.Environment == "PRD") {
+                        build job: 'guestbooka-deployment', parameters: [string(name: 'Environment', value: "PRD2"),string(name: 'Branch', value: "${params.Branch}")]
+                    }
+                    else {
+                        echo "==Note=="
+                        echo "No more servers to deploy"
+                    }
                 }
             }
         }
