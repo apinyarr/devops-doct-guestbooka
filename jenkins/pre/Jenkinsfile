@@ -1,5 +1,6 @@
 def Environment = "SIT"
 def Branch = "develop"
+def node = ["PRE":"pre-app", "PRD":"prd-app"]
 
 pipeline {
     agent {
@@ -34,13 +35,16 @@ pipeline {
             }
         }
 
-        stage('PRE Deployment') {
+        stage('Deployment') {
             when {
-                expression { return params.Environment == "PRE" }
+                anyOf {
+                    expression { return params.Environment == "PRE" }
+                    expression { return params.Environment == "PRD" }
+                }
             }
 
             agent {
-                label "pre-app"
+                label node["${Environment}"]
             }
 
             environment {
@@ -49,7 +53,7 @@ pipeline {
 
             steps {
                 script {
-                    echo "********************* Stage: PRE Deployment *********************"
+                    echo "********************* Stage: ${Environment} Deployment *********************"
                     echo "--------------------- Step: Remove Backup Container ---------------------"
                     sh "docker rm -f guestbooka-backup"
                     echo "==NOTE=="
@@ -73,11 +77,14 @@ pipeline {
 
         stage('Clean Up PRE') {
             when {
-                expression { return params.Environment == "PRE" }
+                anyOf {
+                    expression { return params.Environment == "PRE" }
+                    expression { return params.Environment == "PRD" }
+                }
             }
 
             agent {
-                label "pre-app"
+                label node["${Environment}"]
             }
 
             options {
