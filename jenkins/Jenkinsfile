@@ -6,10 +6,10 @@ pipeline {
         label "master"
     }
 
-    parameters {
-        choice(name: 'Environment', choices: ['SIT'], description: 'Select Environment.')
-        string(name: 'Branch', description: 'Branch name. Default branch is develop.')
-    }
+    // parameters {
+    //     choice(name: 'Environment', choices: ['SIT'], description: 'Select Environment.')
+    //     string(name: 'Branch', description: 'Branch name or Tag. Default branch is develop.')
+    // }
 
     options {
         // skipDefaultCheckout()
@@ -52,7 +52,7 @@ pipeline {
                     echo "If docker rm shown an error, it is ok because there is no a backup container."
 
                     echo "--------------------- Step: Pull Guestbook Base Image ---------------------"
-                    sh "docker pull apinyarr/guestbooka:base"
+                    sh "docker pull apinyarr/guestbooka:${params.Branch}"
 
                     echo "--------------------- Step: Update Code From ${params.Branch} ---------------------"
                     sh "git checkout origin/${params.Branch}"
@@ -71,13 +71,72 @@ pipeline {
             }
         }
 
-        stage('Clean Up') {
+        stage('PRE Deployment') {
+            when {
+                expression { return params.Environment == "PRE" }
+            }
+
+            agent {
+                label "pre-app"
+            }
+
+            environment {
+                MONGODB_IP = "192.168.10.12"
+            }
+
+            steps {
+                script {
+                    echo "********************* Stage: PRE Deployment *********************"
+                    echo "--------------------- Step: Remove Backup Container ---------------------"
+                    sh "docker rm -f guestbooka-backup"
+                    echo "==NOTE=="
+                    echo "If docker rm shown an error, it is ok because there is no a backup container."
+
+                    echo "--------------------- Step: Pull Guestbook Base Image ---------------------"
+                    sh "docker pull apinyarr/guestbooka:${params.Branch}"
+
+                    echo "--------------------- Step: Run Guestbooka Container with Tag ${params.Branch} ---------------------"
+                    try {
+                        sh "docker stop guestbooka"
+                        sh "docker rename guestbooka guestbooka-backup"
+                    } catch (Exception e) {
+                        echo "Exception occurred: " + e.toString()
+                    }
+                    sh "docker run --name guestbooka -e MONGODB_ADDON_URI=mongodb://${MONGODB_IP}:27017/admin -p 8080:8080 apinyarr/guestbooka:base"
+                    currentBuild.description = "Branch: ${params.Branch}"
+                }
+            }
+        }
+
+        stage('Clean Up SIT') {
             when {
                 expression { return params.Environment == "SIT" }
             }
 
             agent {
                 label "sit-app"
+            }
+
+            options {
+                skipDefaultCheckout()
+            }
+
+            steps {
+                script {
+                    echo "********************* Stage: Clean Up *********************"
+                    echo "--------------------- Step: Clean Up Work Space ---------------------"
+                    cleanWs()
+                }
+            }
+        }
+
+        stage('Clean Up PRE') {
+            when {
+                expression { return params.Environment == "PRE" }
+            }
+
+            agent {
+                label "pre-app"
             }
 
             options {
