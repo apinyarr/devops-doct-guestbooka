@@ -73,7 +73,7 @@ pipeline {
                     } catch (Exception e) {
                         echo "Exception occurred: " + e.toString()
                     }
-                    sh "docker run --name guestbooka -e MONGODB_ADDON_URI=mongodb://${MONGODB_IP}:27017/admin -p 8080:8080 apinyarr/guestbooka:base"
+                    sh "docker run -d --name guestbooka -e MONGODB_ADDON_URI=mongodb://${MONGODB_IP}:27017/admin -p 8080:8080 apinyarr/guestbooka:base"
                     currentBuild.description = "Branch: ${params.Branch}"
                 }
             }
