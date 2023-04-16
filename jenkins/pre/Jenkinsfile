@@ -47,6 +47,10 @@ pipeline {
                 label node["${Environment}"]
             }
 
+            options {
+                skipDefaultCheckout()
+            }
+
             environment {
                 MONGODB_IP = "192.168.10.12"
             }
