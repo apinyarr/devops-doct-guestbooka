@@ -8,7 +8,7 @@ pipeline {
     }
 
     parameters {
-        choice(name: 'Environment', choices: ['SIT'], description: 'Select Environment.')
+        choice(name: 'Environment', choices: ['PRE','PRD'], description: 'Select Environment.')
         string(name: 'Branch', description: 'Branch name or Tag. Default branch is develop.')
     }
 
