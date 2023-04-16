@@ -59,6 +59,8 @@ pipeline {
             steps {
                 script {
                     echo "********************* Stage: Docker Tag *********************"
+                    echo "--------------------- Step: Checking out from ${params.Branch} ---------------------"
+                    sh "git checkout origin/${params.Branch}"
                     echo "--------------------- Step: Build an image from ${params.Branch} ---------------------"
                     dir('./app') {
                         sh "docker build -t apinyarr/guestbooka:v${params.Tag}.${BUILD_NUMBER} ."
