@@ -1,6 +1,7 @@
 def Branch = "develop"
 def node = ["PRE":"pre-app", "PRD":"prd-app1", "PRD1":"prd-app1", "PRD2":"prd-app2"]
 def MONGODB_IP = "192.168.10.12"
+def selenium_url = "https://y57fsw1ar6.execute-api.us-east-1.amazonaws.com/startwebdriver?release="
 
 pipeline {
     agent {
