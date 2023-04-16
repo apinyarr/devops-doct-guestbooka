@@ -52,7 +52,7 @@ pipeline {
                     echo "If docker rm shown an error, it is ok because there is no a backup container."
 
                     echo "--------------------- Step: Pull Guestbook Base Image ---------------------"
-                    sh "docker pull apinyarr/guestbooka:${params.Branch}"
+                    sh "docker pull apinyarr/guestbooka:base"
 
                     echo "--------------------- Step: Update Code From ${params.Branch} ---------------------"
                     sh "git checkout origin/${params.Branch}"
