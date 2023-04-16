@@ -1,5 +1,5 @@
 def Branch = "develop"
-def node = ["PRE":"pre-app", "PRD":"prd-app1", "PRD2":"prd-app2"]
+def node = ["PRE":"pre-app", "PRD":"prd-app1", "PRD1":"prd-app1", "PRD2":"prd-app2"]
 def MONGODB_IP = "192.168.10.12"
 
 pipeline {
@@ -8,7 +8,7 @@ pipeline {
     }
 
     parameters {
-        choice(name: 'Environment', choices: ['PRE','PRD'], description: 'Select Environment.')
+        choice(name: 'Environment', choices: ['PRE','PRD','PRD1','PRD2'], description: 'Select Environment.')
         string(name: 'Branch', description: 'Branch name or Tag. Default branch is develop.')
     }
 
