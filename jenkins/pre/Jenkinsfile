@@ -125,7 +125,7 @@ pipeline {
                     echo "********************* Stage: Post Deployment *********************"
                     echo "--------------------- Step: continue deploying the next server (if any)  ---------------------"
                     if(params.Environment == "PRD") {
-                        build job: 'guestbooka-deployment', parameters: [string(name: 'Branch', value: "${params.Branch}"),string(name: 'Branch', value: "PRD2")]
+                        build job: 'guestbooka-deployment', parameters: [string(name: 'Environment', value: "PRD2"),string(name: 'Branch', value: "${params.Branch}")]
                     }
                     else {
                         echo "==Note=="
