@@ -39,7 +39,7 @@ pipeline {
                 script {
                     echo "********************* Stage: Git Tagging *********************"
                     echo "--------------------- Step: Checking out from ${params.Branch} ---------------------"
-                    sh "git checkout origin/${params.Branch}"
+                    sh "git checkout ${params.Branch}"
                     echo "--------------------- Step: Tagging name ${params.Tag}.${BUILD_NUMBER} ---------------------"
                     sh "git tag ${params.Tag}.${BUILD_NUMBER}"
                     sh "git push origin ${params.Tag}.${BUILD_NUMBER}"
@@ -60,7 +60,7 @@ pipeline {
                 script {
                     echo "********************* Stage: Docker Tag *********************"
                     echo "--------------------- Step: Checking out from ${params.Branch} ---------------------"
-                    sh "git checkout origin/${params.Branch}"
+                    sh "git checkout ${params.Branch}"
                     echo "--------------------- Step: Build an image from ${params.Branch} ---------------------"
                     dir('./app') {
                         sh "docker build -t apinyarr/guestbooka:${params.Tag}.${BUILD_NUMBER} ."
