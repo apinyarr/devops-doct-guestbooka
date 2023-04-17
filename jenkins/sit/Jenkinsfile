@@ -62,7 +62,7 @@ pipeline {
                     } catch (Exception e) {
                         echo "Exception occurred: " + e.toString()
                     }
-                    sh "docker create --name guestbooka -e MONGODB_ADDON_URI=mongodb://172.17.0.1:27017/admin -p 8080:8080 apinyarr/guestbooka:base"
+                    sh "docker create --add-host mygraphite:172.17.0.1 --name guestbooka -e MONGODB_ADDON_URI=mongodb://172.17.0.1:27017/admin -p 8080:8080 apinyarr/guestbooka:base"
                     sh "docker cp app/. guestbooka:/"
                     echo "--------------------- Step: Run Guestbooka Container With Code From ${params.Branch} ---------------------"
                     sh "docker start guestbooka"
