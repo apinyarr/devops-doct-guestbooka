@@ -55,7 +55,7 @@ pipeline {
                     sh "docker pull apinyarr/guestbooka:base"
 
                     echo "--------------------- Step: Update Code From ${params.Branch} ---------------------"
-                    sh "git checkout origin/${params.Branch}"
+                    sh "git checkout ${params.Branch}"
                     try {
                         sh "docker stop guestbooka"
                         sh "docker rename guestbooka guestbooka-backup"

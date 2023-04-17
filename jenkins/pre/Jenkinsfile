@@ -31,7 +31,10 @@ pipeline {
                         echo "No specific branch provided!!!"
                         exit 1
                     }
-                    echo "Branch/Tag: ${params.Branch}"
+                    else {
+                        Branch = params.Branch.replace("origin/","")
+                    }
+                    echo "Branch/Tag: ${Branch}"
                     if (params.Environment != "PRE") {
                         MONGODB_IP = "192.168.30.11"
                     }
@@ -65,17 +68,17 @@ pipeline {
                     echo "If docker rm shown an error, it is ok because there is no a backup container."
 
                     echo "--------------------- Step: Pull Guestbook Base Image ---------------------"
-                    sh "docker pull apinyarr/guestbooka:${params.Branch}"
+                    sh "docker pull apinyarr/guestbooka:${Branch}"
 
-                    echo "--------------------- Step: Run Guestbooka Container with Tag ${params.Branch} ---------------------"
+                    echo "--------------------- Step: Run Guestbooka Container with Tag ${Branch} ---------------------"
                     try {
                         sh "docker stop guestbooka"
                         sh "docker rename guestbooka guestbooka-backup"
                     } catch (Exception e) {
                         echo "Exception occurred: " + e.toString()
                     }
-                    sh "docker run -d --name guestbooka -e MONGODB_ADDON_URI=mongodb://${MONGODB_IP}:27017/admin -p 8080:8080 apinyarr/guestbooka:${params.Branch}"
-                    currentBuild.description = "Branch: ${params.Branch}"
+                    sh "docker run -d --name guestbooka -e MONGODB_ADDON_URI=mongodb://${MONGODB_IP}:27017/admin -p 8080:8080 apinyarr/guestbooka:${Branch}"
+                    currentBuild.description = "Branch: ${Branch}"
                 }
             }
         }
@@ -93,9 +96,9 @@ pipeline {
                 script {
                     echo "********************* Stage: Selenium Web Driver *********************"
                     echo "--------------------- Step: Triggering Selenium Lambda function  ---------------------"
-                    sh "curl -v ${selenium_url}${params.Branch}"
+                    sh "curl -v ${selenium_url}${Branch}"
                     echo "--------------------- Step: Selenium result screenshot  ---------------------"
-                    echo "https://andyawson-ui-test.s3.amazonaws.com/screenshots/home_${params.Branch}.png"
+                    echo "https://andyawson-ui-test.s3.amazonaws.com/screenshots/home_${Branch}.png"
                 }
             }
         }
@@ -146,7 +149,7 @@ pipeline {
                     echo "********************* Stage: Post Deployment *********************"
                     echo "--------------------- Step: continue deploying the next server (if any)  ---------------------"
                     if(params.Environment == "PRD") {
-                        build job: 'guestbooka-deployment', parameters: [string(name: 'Environment', value: "PRD2"),string(name: 'Branch', value: "${params.Branch}")]
+                        build job: 'guestbooka-deployment', parameters: [string(name: 'Environment', value: "PRD2"),string(name: 'Branch', value: "${Branch}")]
                     }
                     else {
                         echo "==Note=="
