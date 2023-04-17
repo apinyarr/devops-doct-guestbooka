@@ -1,1 +1,1 @@
-# devops-doct-guestbooka
+# devops-doct-guestbooka : this app will be foundation for another guestbook app
