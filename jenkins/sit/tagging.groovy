@@ -41,10 +41,10 @@ pipeline {
                     echo "--------------------- Step: Checking out from ${params.Branch} ---------------------"
                     sh "git checkout ${params.Branch}"
                     echo "--------------------- Step: Tagging name ${params.Tag}.${BUILD_NUMBER} ---------------------"
-                    sh "git tag ${params.Tag}.${BUILD_NUMBER}"
-                    echo "--------------------- Step: Create release ${params.Tag}.${BUILD_NUMBER} branch ---------------------"
                     if (params.Tag.contains("release")) {
                         sh "git checkout -b ${params.Tag}.${BUILD_NUMBER}"
+                    } else {
+                        sh "git tag ${params.Tag}.${BUILD_NUMBER}"
                     }
                     sh "git push origin ${params.Tag}.${BUILD_NUMBER}"
                 }
