@@ -1,6 +1,7 @@
 def Branch = "develop"
 def node = ["PRE":"pre-app", "PRD":"prd-app1", "PRD1":"prd-app1", "PRD2":"prd-app2"]
 def MONGODB_IP = "192.168.10.12"
+def GRAPHITE_IP = "192.168.10.12"
 def selenium_url = "https://y57fsw1ar6.execute-api.us-east-1.amazonaws.com/startwebdriver?release="
 
 pipeline {
@@ -37,6 +38,7 @@ pipeline {
                     echo "Branch/Tag: ${Branch}"
                     if (params.Environment != "PRE") {
                         MONGODB_IP = "192.168.30.11"
+                        GRAPHITE_IP = "192.168.30.20"
                     }
                 }
             }
@@ -77,7 +79,7 @@ pipeline {
                     } catch (Exception e) {
                         echo "Exception occurred: " + e.toString()
                     }
-                    sh "docker run -d --name guestbooka -e MONGODB_ADDON_URI=mongodb://${MONGODB_IP}:27017/admin -p 8080:8080 apinyarr/guestbooka:${Branch}"
+                    sh "docker run -d --add-host mygraphite:${GRAPHITE_IP} --name guestbooka -e MONGODB_ADDON_URI=mongodb://${MONGODB_IP}:27017/admin -p 8080:8080 apinyarr/guestbooka:${Branch}"
                     currentBuild.description = "Branch: ${Branch}"
                 }
             }
