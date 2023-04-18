@@ -29,7 +29,7 @@ module.exports = {
                 var val = result[i];
                 values[val["_id"]] = val["value"]
             }
-            var title = process.env.TITLE || 'Guestbook A'
+            var title = process.env.TITLE || 'Demo 101'
             res.render('index', {title, values: values});
         });
     },
