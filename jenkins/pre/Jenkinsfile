@@ -49,6 +49,7 @@ pipeline {
                 anyOf {
                     expression { return params.Environment == "PRE" }
                     expression { return params.Environment == "PRD" }
+                    expression { return params.Environment == "PRD1" }
                     expression { return params.Environment == "PRD2" }
                 }
             }
@@ -110,6 +111,7 @@ pipeline {
                 anyOf {
                     expression { return params.Environment == "PRE" }
                     expression { return params.Environment == "PRD" }
+                    expression { return params.Environment == "PRD1" }
                     expression { return params.Environment == "PRD2" }
                 }
             }
@@ -135,6 +137,7 @@ pipeline {
             when {
                 anyOf {
                     expression { return params.Environment == "PRD" }
+                    expression { return params.Environment == "PRD1" }
                     expression { return params.Environment == "PRD2" }
                 }
             }

@@ -4,4 +4,4 @@
 
 App Version = release-1.2.34
 
-Jenkins Version = jenkins1.1.0
+Jenkins Version = jenkins1.2.0
