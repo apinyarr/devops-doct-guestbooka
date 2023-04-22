@@ -38,7 +38,7 @@ pipeline {
                     echo "Branch/Tag: ${Branch}"
                     if (params.Environment != "PRE") {
                         MONGODB_IP = "192.168.30.6"
-                        GRAPHITE_IP = "192.168.30.54"
+                        GRAPHITE_IP = "192.168.30.30"
                     }
                 }
             }
